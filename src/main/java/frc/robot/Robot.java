@@ -5,8 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -25,6 +28,10 @@ public class Robot extends TimedRobot {
   private final CANSparkMax backright_motor = new CANSparkMax(2,MotorType.kBrushless);
   private final CANSparkMax frontleft_motor = new CANSparkMax(3,MotorType.kBrushless);
   private final CANSparkMax backleft_motor = new CANSparkMax(4,MotorType.kBrushless);
+  private final MotorControllerGroup left_motors = new MotorControllerGroup(backleft_motor, frontleft_motor);
+  private final MotorControllerGroup right_motors = new MotorControllerGroup(backright_motor, frontright_motor);
+  private final DifferentialDrive robot = new DifferentialDrive(left_motors, right_motors);
+  private XboxController controller = new XboxController(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -85,7 +92,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // m_robotDrive.
+    robot.tankDrive(controller.getLeftY(), controller.getRightX());
   }
 
   /** This function is called once when the robot is disabled. */
