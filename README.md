@@ -1,3 +1,3 @@
 # testbotthing
 
-NO WAY HOLY CRAP
+NO WAY
