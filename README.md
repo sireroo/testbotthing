@@ -1,3 +1,0 @@
-# testbotthing
-
-NO WAY

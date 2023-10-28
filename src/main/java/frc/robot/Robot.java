@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,6 +23,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kTheAuto = "The Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final CANSparkMax frontright_motor = new CANSparkMax(1,MotorType.kBrushless);
@@ -32,6 +34,7 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup right_motors = new MotorControllerGroup(backright_motor, frontright_motor);
   private final DifferentialDrive robot = new DifferentialDrive(left_motors, right_motors);
   private XboxController controller = new XboxController(0);
+  private Timer timer = new Timer();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -41,7 +44,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("The Auto", kTheAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    right_motors.setInverted(true);
   }
 
   /**
@@ -69,6 +74,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    timer.reset();
+    timer.start();
   }
 
   /** This function is called periodically during autonomous. */
@@ -77,6 +84,17 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
+        break;
+      case kTheAuto:
+        // Put the auto code here
+        if(timer.get() < 0.5) {
+          robot.tankDrive(0.5, 0.5);
+        }else if (timer.get() >= 0.5 && timer.get() < 1.5) {
+          robot.tankDrive(-0.5, -0.5);
+        }else{
+          robot.tankDrive(0.0, 0);
+        }
+
         break;
       case kDefaultAuto:
       default:
@@ -92,7 +110,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    robot.tankDrive(controller.getLeftY(), controller.getRightX());
+    robot.tankDrive(controller.getLeftY()/2, controller.getRightY()/2);
   }
 
   /** This function is called once when the robot is disabled. */
