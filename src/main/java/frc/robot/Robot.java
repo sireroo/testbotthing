@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
+   * @return 
    */
   @Override
   public void robotInit() {
@@ -48,6 +49,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     right_motors.setInverted(true);
   }
+
+public void inchesToMotor() {
+  sdouble ghgh = 4*Math.PI;
+  double ghghgh = 1*10.71*ghgh;
+}
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -88,14 +94,9 @@ public class Robot extends TimedRobot {
       case kTheAuto:
         // Put the auto code here
         if(timer.get() < 0.5) {
-          robot.tankDrive(0.5, 0.5);
-        }else if (timer.get() >= 0.5 && timer.get() < 1.5) {
-          robot.tankDrive(-0.5, -0.5);
-        }else{
-          robot.tankDrive(0.0, 0);
+          robot.tankDrive(0.25, 0.1);
+          break;
         }
-
-        break;
       case kDefaultAuto:
       default:
         // Put default auto code here
