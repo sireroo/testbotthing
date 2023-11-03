@@ -50,11 +50,11 @@ public class Robot extends TimedRobot {
     right_motors.setInverted(true);
   }
 
-public double inchesToMotor() {
-  double ghgh = 4*Math.PI;
-  double ghghgh = 1*10.71*ghgh;
-  return ghghgh;
-}
+//public double inchesToMotorTEST() {
+//  double ghgh = 4*Math.PI;
+//  double ghghgh = 1*10.71*ghgh;
+//  return ghghgh;
+//}
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -95,7 +95,7 @@ public double inchesToMotor() {
       case kTheAuto:
         // Put the auto code here
         if(timer.get() < 0.5) {
-          robot.tankDrive(0.25, 0.1);
+          robot.tankDrive(1, -1);
           break;
         }
       case kDefaultAuto:
