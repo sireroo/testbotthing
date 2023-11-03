@@ -50,9 +50,10 @@ public class Robot extends TimedRobot {
     right_motors.setInverted(true);
   }
 
-public void inchesToMotor() {
-  sdouble ghgh = 4*Math.PI;
+public double inchesToMotor() {
+  double ghgh = 4*Math.PI;
   double ghghgh = 1*10.71*ghgh;
+  return ghghgh;
 }
 
   /**
