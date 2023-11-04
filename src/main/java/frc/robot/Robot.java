@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -24,12 +26,17 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private static final String kTheAuto = "The Auto";
+  private static final String kSEncoderAuto = "Seamus Encoder Auto";
+  private static final String kSPIDAuto = "Seamus PID Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private final CANSparkMax frontright_motor = new CANSparkMax(1,MotorType.kBrushless);
   private final CANSparkMax backright_motor = new CANSparkMax(2,MotorType.kBrushless);
   private final CANSparkMax frontleft_motor = new CANSparkMax(3,MotorType.kBrushless);
   private final CANSparkMax backleft_motor = new CANSparkMax(4,MotorType.kBrushless);
+
+  private final RelativeEncoder backleft_encoder = (backleft_motor.getEncoder());
+
   private final MotorControllerGroup left_motors = new MotorControllerGroup(backleft_motor, frontleft_motor);
   private final MotorControllerGroup right_motors = new MotorControllerGroup(backright_motor, frontright_motor);
   private final DifferentialDrive robot = new DifferentialDrive(left_motors, right_motors);
@@ -45,9 +52,14 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     m_chooser.addOption("The Auto", kTheAuto);
+    m_chooser.addOption("Seamus Encoder Auto", kSEncoderAuto);
+    m_chooser.addOption("Seamus PID Auto", kSPIDAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     right_motors.setInverted(true);
   }
+
+  private PIDController forwardController;
+
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -76,11 +88,17 @@ public class Robot extends TimedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
     timer.reset();
     timer.start();
+    resetEncoder();
+  }  
+
+  private void resetEncoder() {
+    backleft_encoder.setPosition(0);
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putNumber("Back Left Encoder", backleft_encoder.getPosition());
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -96,6 +114,22 @@ public class Robot extends TimedRobot {
         }
 
         break;
+      case kSEncoderAuto:
+        
+      if(backleft_encoder.getPosition()<5) {
+        robot.tankDrive(0.5, 0.5);
+      }
+      else {
+        robot.tankDrive(0, 0);
+      }
+      break;
+
+      case kSPIDAuto:
+
+      forwardController = new PIDController(1, 0, 0);
+      forwardController.setSetpoint(5);
+      
+      break;
       case kDefaultAuto:
       default:
         // Put default auto code here
