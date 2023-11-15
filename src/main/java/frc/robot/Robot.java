@@ -37,11 +37,16 @@ public class Robot extends TimedRobot {
 
   private final RelativeEncoder backleft_encoder = (backleft_motor.getEncoder());
 
+  double forwardPower;
+
   private final MotorControllerGroup left_motors = new MotorControllerGroup(backleft_motor, frontleft_motor);
   private final MotorControllerGroup right_motors = new MotorControllerGroup(backright_motor, frontright_motor);
   private final DifferentialDrive robot = new DifferentialDrive(left_motors, right_motors);
   private XboxController controller = new XboxController(0);
   private Timer timer = new Timer();
+
+  private final PIDController distanceController = new PIDController(3.5, 0.005, 0.001);
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -58,8 +63,6 @@ public class Robot extends TimedRobot {
     right_motors.setInverted(true);
   }
 
-  private PIDController forwardController;
-
 
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -69,7 +72,9 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -99,6 +104,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     SmartDashboard.putNumber("Back Left Encoder", backleft_encoder.getPosition());
+    SmartDashboard.putNumber("Forward Power", forwardPower);
+
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -116,7 +123,7 @@ public class Robot extends TimedRobot {
         break;
       case kSEncoderAuto:
         
-      if(backleft_encoder.getPosition()<5) {
+      if(backleft_encoder.getPosition()<10) {
         robot.tankDrive(0.5, 0.5);
       }
       else {
@@ -126,8 +133,19 @@ public class Robot extends TimedRobot {
 
       case kSPIDAuto:
 
-      forwardController = new PIDController(1, 0, 0);
-      forwardController.setSetpoint(5);
+      distanceController.setSetpoint(5);
+
+      forwardPower = distanceController.calculate(backleft_encoder.getPosition()/2);
+
+      if (forwardPower > 0.5){
+        forwardPower = 0.5;
+      } else if (forwardPower < -0.5){
+        forwardPower = -0.5;
+      }
+
+      if (distanceController.getSetpoint() != 0) {
+        robot.tankDrive(forwardPower, forwardPower);
+    }
       
       break;
       case kDefaultAuto:
